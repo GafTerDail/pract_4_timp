@@ -1,45 +1,88 @@
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <cstdlib>
+#include "crypto1.h"
+
 using namespace std;
-int readFile()
+using namespace CryptoPP;
+
+
+
+
+int main()
 {
-	setlocale(LC_CTYPE, "rus");
-	ifstream inf("C:\\hash.txt");
-	if (!inf)
-	{
-		cerr << "���� ��������!" << endl;
-		exit(1);
-	}
-	return 0;
-}
-//#include <C:\Users\�����\Downloads\cryptopp-CRYPTOPP_8_5_0\des.h>
-#include "C:\Users\�����\Downloads\cryptopp-CRYPTOPP_8_5_0\cryptlib.h"
-#include "C:\Users\�����\Downloads\cryptopp-CRYPTOPP_8_5_0\sha.h"
-#include "C:\Users\�����\Downloads\cryptopp-CRYPTOPP_8_5_0\files.h"
-#include "crypto.h"
+    setlocale(LC_ALL, "rus");
+    cout << "Программа шифрования: " << endl;
+    unsigned op, cip;
+    string FIn, FOut, Pass;
 
-int main(int argc, char* argv[])
-{
+    do {
+        cout << "\nВыберете действие: (0 - exit, 1 - encrypt, 2 - decrypt): ";
+        cin >> op;
 
-	using namespace CryptoPP;
-	HexEncoder encoder(new FileSink("C:\\hash.txt", true ));
+        if (op != 0) {
+            cout << "\nВыберете алгоритм: " << endl;
+            cout << "1 - AES" << endl;
+            cout << "2 - DES" << endl;
 
+            cout << "Введите номер выбранного алгоритма: ";
+            cin >> cip;
+        }
 
-	std::string inf;
-	std::string digest;
-	inf = readFile();
+        if (op > 2) {
+            cerr << "Ошибка!\n";
+        }
 
-	CryptoPP::SHA1 obj;
-	obj.Update((const byte*)inf.data(), inf.size());
-	digest.resize(obj.DigestSize());
-	obj.Final((byte*)&digest[0]);
+        else if (op > 0) {
+            cout << "Укажите путь файла : " << endl;
+            cin >> FIn;
 
-	std::cout << "���������: " << std::hex << inf << std::endl;
+            cout << "Укажите путь файла для сохранения: " << endl;
+            cin >> FOut;
 
-	std::cout << "Digest: ";
-	StringSource(digest, true, new Redirector(encoder));
-	std::cout << std::endl;
+            cout << "Введите пароль: " << endl;
+            cin >> Pass;
 
+            if (cip == 1) {
+                AES_CRYP aes(FIn, FOut, Pass);
+
+                if (op == 1) {
+                    if (aes.encrypt())
+                        cout << "Успешно зашифровано." << endl;
+                    else
+                        cout << "Не удалось зашифровать." << endl;
+                }
+                else {
+                    if (aes.decrypt())
+                        cout << "Успешно расшифровано." << endl;
+                    else
+                        cout << "Не удалось расшифровать" << endl;
+                }
+            }
+
+            else if (cip == 2) {
+                DES_CRYP des(FIn, FOut, Pass);
+
+                if (op == 1) {
+                    if (des.encrypt())
+                        cout << "Успешно зашифровано." << endl;
+                    else
+                        cout << "Не удалось зашифровать." << endl;
+                }
+                else {
+                    if (des.decrypt())
+                        cout << "Успешно расшифровано." << endl;
+                    else
+                        cout << "Не удалось расшифровать." << endl;
+                }
+            }
+
+            else {
+                cerr << "Ошибка!\n";
+            }
+        }
+
+    } while (op != 0);
+
+    return 0;
 }
