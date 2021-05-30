@@ -1,45 +1,37 @@
+#include <vector>
 #include <iostream>
-#include <fstream>
 #include <string>
-#include <cstdlib>
-using namespace std;
-int readFile()
-{
-	setlocale(LC_CTYPE, "rus");
-	ifstream inf("C:\\hash.txt");
-	if (!inf)
-	{
-		cerr << "Файл ненайден!" << endl;
-		exit(1);
-	}
-	return 0;
-}
-//#include <C:\Users\Артем\Downloads\cryptopp-CRYPTOPP_8_5_0\des.h>
-#include "C:\Users\Артем\Downloads\cryptopp-CRYPTOPP_8_5_0\cryptlib.h"
-#include "C:\Users\Артем\Downloads\cryptopp-CRYPTOPP_8_5_0\sha.h"
-#include "C:\Users\Артем\Downloads\cryptopp-CRYPTOPP_8_5_0\files.h"
+#include "C:\Users\РђСЂС‚РµРј\Downloads\cryptopp-CRYPTOPP_8_5_0\files.h"
 #include "crypto.h"
-
-int main(int argc, char* argv[])
+#include <fstream>
+using namespace std;
+int main()
 {
+    using namespace CryptoPP;
 
-	using namespace CryptoPP;
-	HexEncoder encoder(new FileSink("C:\\hash.txt", true ));
+    SHA1 obj;
 
+    cout << "РРјСЏ: " << obj.AlgorithmName() << endl;
+    cout << "Р Р°Р·РјРµСЂ С…СЌС€Р°:" << obj.DigestSize() << endl;
+    cout << "Р Р°Р·РјРµСЂ Р±Р»РѕРєР°:" << obj.BlockSize() << endl;
+    fstream file;
+    string inf = "C:\\hash.txt";
+    string cont;
+    file.open(inf);
+    if (!file.is_open())
+    {
+        cout << "Р¤Р°Р№Р» РЅРµРЅР°Р№РґРµРЅ!" << endl;
+        return 1;
+    }
+    cout << "РЎРѕРґРµСЂР¶РёРјРѕРµ С„Р°Р№Р»Р°: " << cont << endl;
 
-	std::string inf;
-	std::string digest;
-	inf = readFile();
+    vector<byte> digest(obj.DigestSize());
 
-	CryptoPP::SHA1 obj;
-	obj.Update((const byte*)inf.data(), inf.size());
-	digest.resize(obj.DigestSize());
-	obj.Final((byte*)&digest[0]);
+    obj.Update(reinterpret_cast <const byte*> (cont.data()), cont.size());
+    obj.Final(digest.data());
 
-	std::cout << "Сообщение: " << std::hex << inf << std::endl;
-
-	std::cout << "Digest: ";
-	StringSource(digest, true, new Redirector(encoder));
-	std::cout << std::endl;
-
+    cout << "РҐСЌС€: ";
+    CryptoPP::StringSource(digest.data(), digest.size(), true, new  CryptoPP::HexEncoder(new FileSink(cout)));
+    cout << endl;
+    return 0;
 }
