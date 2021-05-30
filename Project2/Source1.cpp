@@ -11,9 +11,6 @@ int main()
 
     SHA1 obj;
 
-    cout << "Имя: " << obj.AlgorithmName() << endl;
-    cout << "Размер хэша:" << obj.DigestSize() << endl;
-    cout << "Размер блока:" << obj.BlockSize() << endl;
     fstream file;
     string inf = "C:\\hash.txt";
     string cont;
